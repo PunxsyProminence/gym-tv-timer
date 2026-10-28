@@ -1,0 +1,20 @@
+{
+  "name": "gym-tv-timer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pure round-timer, TV-pairing and bell logic for a gym TV, extracted from ppbf-platform. No storage, auth or framework code.",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.20.1",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "^5.9.3"
+  }
+}
