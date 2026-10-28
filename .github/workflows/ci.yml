@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+      # ppbf-platform installs this repo by commit and runs the committed dist/, so dist/ must be
+      # exactly what the source builds to.
+      - name: Committed dist/ matches a fresh build
+        run: |
+          npm run build
+          changed="$(git status --porcelain -- dist)"
+          if [ -n "$changed" ]; then
+            echo "$changed"
+            echo "::error::dist/ does not match a fresh build of src/. Run npm run build and commit dist/."
+            exit 1
+          fi
+
+      - run: npm run check:dropin

@@ -6,9 +6,51 @@
   "engines": {
     "node": "22.x"
   },
+  "files": [
+    "dist",
+    "sounds"
+  ],
+  "exports": {
+    "./roundTimers": {
+      "types": "./dist/roundTimers.d.ts",
+      "default": "./dist/roundTimers.js"
+    },
+    "./wallRoundTimer": {
+      "types": "./dist/wallRoundTimer.d.ts",
+      "default": "./dist/wallRoundTimer.js"
+    },
+    "./gymSayings": {
+      "types": "./dist/gymSayings.d.ts",
+      "default": "./dist/gymSayings.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "default": "./dist/errors.js"
+    },
+    "./gymTvs": {
+      "types": "./dist/gymTvs.d.ts",
+      "default": "./dist/gymTvs.js"
+    },
+    "./security": {
+      "types": "./dist/security.d.ts",
+      "default": "./dist/security.js"
+    },
+    "./sounds/boxing-bell.wav": "./sounds/boxing-bell.wav",
+    "./sounds/CREDITS.txt": "./sounds/CREDITS.txt",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
+    "check:dropin": "node scripts/check-dropin.mjs"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
