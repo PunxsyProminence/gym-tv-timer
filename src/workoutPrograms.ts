@@ -12,6 +12,7 @@
 // block's own restSeconds.
 
 import { ROUND_TIMER_LIMITS, type RoundTimerSettings } from './roundTimers';
+import { validateStations, type StationSetup } from './stations';
 
 export interface WorkoutBlock {
   label: string;
@@ -24,6 +25,8 @@ export interface WorkoutProgram {
   version: 1;
   name: string;
   blocks: WorkoutBlock[];
+  /** Optional circuit: groups rotate through these stations, one move per round (stations.ts). */
+  stations?: StationSetup;
 }
 
 export const WORKOUT_PROGRAM_LIMITS = {
@@ -141,6 +144,8 @@ export type WorkoutProgramValidation = { ok: true; program: WorkoutProgram } | {
 // block's 0-based index after a colon, for example BLOCK_ROUNDS_RANGE:2.
 //   PROGRAM_SHAPE, PROGRAM_VERSION, PROGRAM_NAME_LENGTH, PROGRAM_BLOCKS_COUNT, PROGRAM_TOO_LONG,
 //   BLOCK_SHAPE:i, BLOCK_LABEL_LENGTH:i, BLOCK_ROUNDS_RANGE:i, BLOCK_WORK_RANGE:i, BLOCK_REST_RANGE:i
+// and, when `stations` is present, the codes of validateStations (STATIONS_SHAPE, STATIONS_COUNT,
+// STATIONS_GROUPS, STATION_SHAPE:i, STATION_LABEL_LENGTH:i) pass through unchanged.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -192,8 +197,16 @@ function validate(input: unknown): WorkoutProgramValidation {
     }
   }
 
+  let stations: StationSetup | undefined;
+  if (input.stations !== undefined) {
+    const checked = validateStations(input.stations);
+    if (checked.ok) stations = checked.stations;
+    else problems.push(...checked.problems);
+  }
+
   if (problems.length === 0) {
     const program: WorkoutProgram = { version: 1, name: name as string, blocks };
+    if (stations) program.stations = stations;
     if (programTotalSeconds(program) > WORKOUT_PROGRAM_LIMITS.totalSeconds.max) problems.push('PROGRAM_TOO_LONG');
     else return { ok: true, program };
   }

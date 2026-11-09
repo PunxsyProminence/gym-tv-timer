@@ -19,6 +19,7 @@ exports.deriveProgramPosition = deriveProgramPosition;
 exports.singleBlockProgram = singleBlockProgram;
 exports.validateWorkoutProgram = validateWorkoutProgram;
 const roundTimers_1 = require("./roundTimers");
+const stations_1 = require("./stations");
 exports.WORKOUT_PROGRAM_LIMITS = {
     name: { min: 1, max: 60 },
     label: { min: 0, max: 40 },
@@ -109,6 +110,8 @@ function singleBlockProgram(settings, name = 'Rounds') {
 // block's 0-based index after a colon, for example BLOCK_ROUNDS_RANGE:2.
 //   PROGRAM_SHAPE, PROGRAM_VERSION, PROGRAM_NAME_LENGTH, PROGRAM_BLOCKS_COUNT, PROGRAM_TOO_LONG,
 //   BLOCK_SHAPE:i, BLOCK_LABEL_LENGTH:i, BLOCK_ROUNDS_RANGE:i, BLOCK_WORK_RANGE:i, BLOCK_REST_RANGE:i
+// and, when `stations` is present, the codes of validateStations (STATIONS_SHAPE, STATIONS_COUNT,
+// STATIONS_GROUPS, STATION_SHAPE:i, STATION_LABEL_LENGTH:i) pass through unchanged.
 function isRecord(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -166,8 +169,18 @@ function validate(input) {
             }
         }
     }
+    let stations;
+    if (input.stations !== undefined) {
+        const checked = (0, stations_1.validateStations)(input.stations);
+        if (checked.ok)
+            stations = checked.stations;
+        else
+            problems.push(...checked.problems);
+    }
     if (problems.length === 0) {
         const program = { version: 1, name: name, blocks };
+        if (stations)
+            program.stations = stations;
         if (programTotalSeconds(program) > exports.WORKOUT_PROGRAM_LIMITS.totalSeconds.max)
             problems.push('PROGRAM_TOO_LONG');
         else

@@ -46,6 +46,14 @@ Plug-back, file by file (the ppbf-platform file keeps its path, so no other impo
 
 `gym-tv-timer/workoutPrograms` (browser-safe, pure) describes a workout as ordered blocks of `rounds x work/rest` seconds, so a session can mix intervals (a warm-up, boxing rounds, a Tabata). `deriveProgramPosition(program, elapsedSeconds)` says which block, round and phase the room is in and the seconds left; `programTotalSeconds` and `singleBlockProgram` (today's round timer as one block) round it out. `validateWorkoutProgram(input)` checks anything a host loads or saves, never throws, and returns a trimmed copy or stable problem codes; limits are in `WORKOUT_PROGRAM_LIMITS`. The package stores nothing and holds no person, account or device id; how many programs a person may save is the host app's decision.
 
+## Stations
+
+`gym-tv-timer/stations` (browser-safe, pure) rotates groups through labelled stations, one move per round: group g is at station (g - 1 + round - 1) mod the number of stations. `stationBoard(setup, overallRound)` says where each group stands (for the TV's "who is up" board) and `validateStations` checks a `{ labels, groups }` setup (2 to 20 stations, labels 1 to 40 characters, groups 1 to the station count). A program carries it in its optional `stations` field.
+
+## Sound cues
+
+`gym-tv-timer/workoutCues` (browser-safe, pure) turns a program and `CueSettings` into a sorted list of cues: `cueSchedule(program, settings)`. Bell or buzzer at each round's start and end (one strike when there is no rest), the knock at 10 seconds left, and optional spoken calls ("10 seconds", 3-2-1 in rests, "last round", "switch"; the words are `CUE_WORDS`, English only). `DEFAULT_CUE_SETTINGS` is today's gym TV, and a test proves its bell and knock seconds equal what `roundSounds` rings. The host plays the sounds and speaks the words.
+
 ## Working on it
 
 ```bash
