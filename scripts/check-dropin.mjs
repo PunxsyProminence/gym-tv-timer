@@ -27,8 +27,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rootRequire = createRequire(path.join(root, 'package.json'));
-const MODULES = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'gymTvs', 'security'];
-const BROWSER_SAFE = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors'];
+const MODULES = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'gymTvs', 'security', 'workoutPrograms'];
+const BROWSER_SAFE = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'workoutPrograms'];
 
 const problems = [];
 function fail(message) {
@@ -121,6 +121,7 @@ import { GYM_SAYINGS, type GymSaying } from 'gym-tv-timer/gymSayings';
 import { PilotError } from 'gym-tv-timer/errors';
 import { GymTvError, isWellFormedPairCode, newPairCode, normalizePairCode, validateTvName } from 'gym-tv-timer/gymTvs';
 import { createOpaqueToken, hashToken } from 'gym-tv-timer/security';
+import { deriveProgramPosition, singleBlockProgram, validateWorkoutProgram } from 'gym-tv-timer/workoutPrograms';
 
 const START = '2026-10-12T18:00:00.000Z';
 
@@ -143,6 +144,9 @@ test('every subpath works from a host', () => {
   expect(() => validateTvName('')).toThrow(GymTvError);
   expect(new GymTvError(400, 'TV_NAME_LENGTH')).toBeInstanceOf(PilotError);
   expect(hashToken(createOpaqueToken())).toMatch(/^[0-9a-f]{64}$/);
+  const program = singleBlockProgram({ roundSeconds: 180, restSeconds: 60, roundsTotal: 3 });
+  expect(validateWorkoutProgram(program).ok).toBe(true);
+  expect(deriveProgramPosition(program, 10)).toMatchObject({ phase: 'work', overallRound: 1, secondsLeft: 170 });
 });
 `);
   // apps/web/tsconfig.json's compiler options, minus the Next plugin, paths and incremental.

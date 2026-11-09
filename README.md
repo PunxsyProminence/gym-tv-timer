@@ -42,6 +42,10 @@ Plug-back, file by file (the ppbf-platform file keeps its path, so no other impo
 | `apps/web/src/server/pilot/errors.ts` | `PilotError` is deleted and re-exported from `gym-tv-timer/errors`, so there is one `PilotError` class: a `GymTvError` from this package must still be `instanceof` the class ppbf-platform's error handling checks, or its 400 turns into a 500 |
 | `apps/web/public/sounds/boxing-bell.wav` | stays (Next serves `public/`); same bytes as `sounds/boxing-bell.wav` |
 
+## Workout programs
+
+`gym-tv-timer/workoutPrograms` (browser-safe, pure) describes a workout as ordered blocks of `rounds x work/rest` seconds, so a session can mix intervals (a warm-up, boxing rounds, a Tabata). `deriveProgramPosition(program, elapsedSeconds)` says which block, round and phase the room is in and the seconds left; `programTotalSeconds` and `singleBlockProgram` (today's round timer as one block) round it out. `validateWorkoutProgram(input)` checks anything a host loads or saves, never throws, and returns a trimmed copy or stable problem codes; limits are in `WORKOUT_PROGRAM_LIMITS`. The package stores nothing and holds no person, account or device id; how many programs a person may save is the host app's decision.
+
 ## Working on it
 
 ```bash

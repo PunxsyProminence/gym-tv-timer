@@ -35,6 +35,10 @@
       "types": "./dist/security.d.ts",
       "default": "./dist/security.js"
     },
+    "./workoutPrograms": {
+      "types": "./dist/workoutPrograms.d.ts",
+      "default": "./dist/workoutPrograms.js"
+    },
     "./sounds/boxing-bell.wav": "./sounds/boxing-bell.wav",
     "./sounds/CREDITS.txt": "./sounds/CREDITS.txt",
     "./package.json": "./package.json"
