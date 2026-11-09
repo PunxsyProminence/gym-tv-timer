@@ -30,14 +30,14 @@ jobs:
       - run: npm test
 
       # ppbf-platform installs this repo by commit and runs the committed dist/, so dist/ must be
-      # exactly what the source builds to.
-      - name: Committed dist/ matches a fresh build
+      # exactly what the source compiles to.
+      - name: Committed dist/ matches a fresh compile
         run: |
-          npm run build
+          npm run compile
           changed="$(git status --porcelain -- dist)"
           if [ -n "$changed" ]; then
             echo "$changed"
-            echo "::error::dist/ does not match a fresh build of src/. Run npm run build and commit dist/."
+            echo "::error::dist/ does not match a fresh compile of src/. Run npm run compile and commit dist/."
             exit 1
           fi
 
