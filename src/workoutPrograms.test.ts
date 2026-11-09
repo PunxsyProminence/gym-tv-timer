@@ -246,3 +246,25 @@ describe('validateWorkoutProgram', () => {
     expect(problems(program({ blocks: [null] }))).toEqual(['BLOCK_SHAPE:0']);
   });
 });
+
+describe('optional stations', () => {
+  const base = { version: 1, name: 'W', blocks: [{ label: 'b', rounds: 2, workSeconds: 10, restSeconds: 0 }] };
+  const stations = { labels: [' Bag ', 'Rope', 'Pads'], groups: 2 };
+
+  test('absent stays absent', () => {
+    const result = validateWorkoutProgram(base);
+    expect(result.ok && 'stations' in result.program).toBe(false);
+  });
+
+  test('present is validated, normalized and kept', () => {
+    const result = validateWorkoutProgram({ ...base, stations: { ...stations, extra: 1 } });
+    expect(result).toEqual({ ok: true, program: { ...base, stations: { labels: ['Bag', 'Rope', 'Pads'], groups: 2 } } });
+  });
+
+  test('station problems pass through with their codes', () => {
+    expect(validateWorkoutProgram({ ...base, stations: { labels: ['a'], groups: 1 } })).toEqual({ ok: false, problems: ['STATIONS_COUNT'] });
+    expect(validateWorkoutProgram({ ...base, stations: { ...stations, groups: 4 } })).toEqual({ ok: false, problems: ['STATIONS_GROUPS'] });
+    expect(validateWorkoutProgram({ ...base, stations: null })).toEqual({ ok: false, problems: ['STATIONS_SHAPE'] });
+    expect(validateWorkoutProgram({ ...base, name: '', stations: 'x' })).toEqual({ ok: false, problems: ['PROGRAM_NAME_LENGTH', 'STATIONS_SHAPE'] });
+  });
+});

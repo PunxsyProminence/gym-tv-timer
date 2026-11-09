@@ -27,8 +27,8 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rootRequire = createRequire(path.join(root, 'package.json'));
-const MODULES = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'gymTvs', 'security', 'workoutPrograms'];
-const BROWSER_SAFE = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'workoutPrograms'];
+const MODULES = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'gymTvs', 'security', 'workoutPrograms', 'stations', 'workoutCues'];
+const BROWSER_SAFE = ['roundTimers', 'wallRoundTimer', 'gymSayings', 'errors', 'workoutPrograms', 'stations', 'workoutCues'];
 
 const problems = [];
 function fail(message) {
@@ -122,6 +122,8 @@ import { PilotError } from 'gym-tv-timer/errors';
 import { GymTvError, isWellFormedPairCode, newPairCode, normalizePairCode, validateTvName } from 'gym-tv-timer/gymTvs';
 import { createOpaqueToken, hashToken } from 'gym-tv-timer/security';
 import { deriveProgramPosition, singleBlockProgram, validateWorkoutProgram } from 'gym-tv-timer/workoutPrograms';
+import { stationBoard, validateStations, type StationSetup } from 'gym-tv-timer/stations';
+import { DEFAULT_CUE_SETTINGS, cueSchedule, type Cue } from 'gym-tv-timer/workoutCues';
 
 const START = '2026-10-12T18:00:00.000Z';
 
@@ -147,6 +149,11 @@ test('every subpath works from a host', () => {
   const program = singleBlockProgram({ roundSeconds: 180, restSeconds: 60, roundsTotal: 3 });
   expect(validateWorkoutProgram(program).ok).toBe(true);
   expect(deriveProgramPosition(program, 10)).toMatchObject({ phase: 'work', overallRound: 1, secondsLeft: 170 });
+  const setup: StationSetup = { labels: ['Bag', 'Rope', 'Pads'], groups: 2 };
+  expect(validateStations(setup).ok).toBe(true);
+  expect(stationBoard(setup, 2).map((s) => s.label)).toEqual(['Rope', 'Pads']);
+  const cues: Cue[] = cueSchedule(program, DEFAULT_CUE_SETTINGS);
+  expect(cues[0]).toMatchObject({ atSecond: 0, sound: 'bell', what: 'round_start' });
 });
 `);
   // apps/web/tsconfig.json's compiler options, minus the Next plugin, paths and incremental.

@@ -1,4 +1,5 @@
 import { type RoundTimerSettings } from './roundTimers';
+import { type StationSetup } from './stations';
 export interface WorkoutBlock {
     label: string;
     rounds: number;
@@ -9,6 +10,8 @@ export interface WorkoutProgram {
     version: 1;
     name: string;
     blocks: WorkoutBlock[];
+    /** Optional circuit: groups rotate through these stations, one move per round (stations.ts). */
+    stations?: StationSetup;
 }
 export declare const WORKOUT_PROGRAM_LIMITS: {
     readonly name: {

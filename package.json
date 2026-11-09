@@ -39,6 +39,14 @@
       "types": "./dist/workoutPrograms.d.ts",
       "default": "./dist/workoutPrograms.js"
     },
+    "./stations": {
+      "types": "./dist/stations.d.ts",
+      "default": "./dist/stations.js"
+    },
+    "./workoutCues": {
+      "types": "./dist/workoutCues.d.ts",
+      "default": "./dist/workoutCues.js"
+    },
     "./sounds/boxing-bell.wav": "./sounds/boxing-bell.wav",
     "./sounds/CREDITS.txt": "./sounds/CREDITS.txt",
     "./package.json": "./package.json"
