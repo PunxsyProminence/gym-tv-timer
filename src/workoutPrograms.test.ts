@@ -226,6 +226,14 @@ describe('validateWorkoutProgram', () => {
     expect(problems({ name: 'W', blocks: [block] })).toEqual(['PROGRAM_VERSION']);
   });
 
+  test('sparse arrays: a hole is a bad block, not a skipped one', () => {
+    const sparse = [block, block];
+    delete (sparse as unknown[])[0];
+    expect(validateWorkoutProgram(program({ blocks: sparse }))).toEqual({ ok: false, problems: ['BLOCK_SHAPE:0'] });
+    expect(validateWorkoutProgram(program({ blocks: new Array(3) })).ok).toBe(false);
+    expect(problems(program({ blocks: new Array(3) }))).toEqual(['BLOCK_SHAPE:0', 'BLOCK_SHAPE:1', 'BLOCK_SHAPE:2']);
+  });
+
   test('never throws on odd input', () => {
     const hostile = { version: 1, name: 'x', get blocks(): unknown { throw new Error('boom'); } };
     const huge = program({ blocks: new Array(5_000_000).fill(block) });

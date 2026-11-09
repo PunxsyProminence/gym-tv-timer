@@ -173,10 +173,12 @@ function validate(input: unknown): WorkoutProgramValidation {
   } else if (!inRange(input.blocks.length, WORKOUT_PROGRAM_LIMITS.blocks)) {
     problems.push('PROGRAM_BLOCKS_COUNT'); // length checked before walking
   } else {
-    input.blocks.forEach((raw: unknown, i: number) => {
+    // Indexed loop, not forEach: forEach skips holes in a sparse array, which would drop blocks.
+    for (let i = 0; i < input.blocks.length; i += 1) {
+      const raw: unknown = input.blocks[i];
       if (!isRecord(raw)) {
         problems.push(`BLOCK_SHAPE:${i}`);
-        return;
+        continue;
       }
       const label = typeof raw.label === 'string' ? raw.label.trim() : null;
       if (label === null) problems.push(`BLOCK_SHAPE:${i}`);
@@ -187,7 +189,7 @@ function validate(input: unknown): WorkoutProgramValidation {
       if (label !== null) {
         blocks.push({ label, rounds: raw.rounds as number, workSeconds: raw.workSeconds as number, restSeconds: raw.restSeconds as number });
       }
-    });
+    }
   }
 
   if (problems.length === 0) {

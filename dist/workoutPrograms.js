@@ -143,10 +143,12 @@ function validate(input) {
         problems.push('PROGRAM_BLOCKS_COUNT'); // length checked before walking
     }
     else {
-        input.blocks.forEach((raw, i) => {
+        // Indexed loop, not forEach: forEach skips holes in a sparse array, which would drop blocks.
+        for (let i = 0; i < input.blocks.length; i += 1) {
+            const raw = input.blocks[i];
             if (!isRecord(raw)) {
                 problems.push(`BLOCK_SHAPE:${i}`);
-                return;
+                continue;
             }
             const label = typeof raw.label === 'string' ? raw.label.trim() : null;
             if (label === null)
@@ -162,7 +164,7 @@ function validate(input) {
             if (label !== null) {
                 blocks.push({ label, rounds: raw.rounds, workSeconds: raw.workSeconds, restSeconds: raw.restSeconds });
             }
-        });
+        }
     }
     if (problems.length === 0) {
         const program = { version: 1, name: name, blocks };
