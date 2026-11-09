@@ -48,10 +48,12 @@ Plug-back, file by file (the ppbf-platform file keeps its path, so no other impo
 npm ci
 npm run typecheck
 npm test
-npm run build
+npm run compile
 npm run check:dropin
 ```
 
-`dist/` is committed and CI fails when it does not match a fresh `npm run build`. `check:dropin` installs the package into a throwaway project and checks the installed files, every import, the browser-safe ones, and the types and a test under ppbf-platform's TypeScript and ts-jest settings; `node scripts/check-dropin.mjs github:PunxsyProminence/gym-tv-timer#<sha>` runs the same checks against a pushed commit. It does not run a Next build.
+`dist/` is committed and CI fails when it does not match a fresh `npm run compile`. `check:dropin` installs the package into a throwaway project and checks the installed files, every import, the browser-safe ones, and the types and a test under ppbf-platform's TypeScript and ts-jest settings; `node scripts/check-dropin.mjs github:PunxsyProminence/gym-tv-timer#<sha>` runs the same checks against a pushed commit. It does not run a Next build.
+
+The script is called `compile`, not `build`, on purpose: npm runs a full `npm install` (dev dependencies included) inside any git dependency that has a `build`, `prepare`, `prepack`, `preinstall`, `install` or `postinstall` script. `dist/` is committed, so nothing needs building at install time. Do not add a script with one of those names.
 
 Node 22. No license has been chosen yet.
